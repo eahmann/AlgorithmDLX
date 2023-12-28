@@ -5,14 +5,22 @@ namespace AlgorithmDLX.Classes;
 public class DLXSolver : IDLXSolver
 {
 
-    public async Task StartSolveAsync(Header rootHeader, Action<List<int>> onPartialSolution, Action<List<int>> onFullSolution, Action<string> log, CancellationToken cancellationToken, Func<bool> shouldContinue)
+    public async Task StartSolveAsync(Header rootHeader, Action<List<int>> onPartialSolution, Action<List<int>> onFullSolution, Action<string> log, Func<bool> shouldContinue, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(rootHeader);
+        ArgumentNullException.ThrowIfNull(onPartialSolution);
+        ArgumentNullException.ThrowIfNull(onFullSolution);
+        ArgumentNullException.ThrowIfNull(log);
+        if (cancellationToken == CancellationToken.None)
+        {
+            throw new ArgumentNullException(nameof(cancellationToken));
+        }
         try
         {
             await Task.Run(() =>
             {
                 List<int> partialSolution = [];
-                Search(rootHeader, partialSolution, log, cancellationToken, onPartialSolution, onFullSolution, shouldContinue);
+                Search(rootHeader, partialSolution, log, onPartialSolution, onFullSolution, shouldContinue, cancellationToken);
 
             }, cancellationToken);
         }
@@ -26,7 +34,7 @@ public class DLXSolver : IDLXSolver
         }
     }
 
-    private void Search(Header rootHeader, List<int> currentSolution, Action<string> log, CancellationToken cancellationToken, Action<List<int>> onPartialSolution, Action<List<int>> onFullSolution, Func<bool> shouldContinue)
+    private static void Search(Header rootHeader, List<int> currentSolution, Action<string> log, Action<List<int>> onPartialSolution, Action<List<int>> onFullSolution, Func<bool> shouldContinue, CancellationToken cancellationToken)
     {
         if (!shouldContinue())
         {
@@ -50,14 +58,14 @@ public class DLXSolver : IDLXSolver
             currentSolution.Add(rowNode.RowIndex);
             foreach (Node horizontalNode in IterateRow(rowNode))
             {
-                horizontalNode.ColumnHeader.Cover();
+                horizontalNode!.ColumnHeader!.Cover();
             }
 
-            Search(rootHeader, currentSolution, log, cancellationToken, onPartialSolution, onFullSolution, shouldContinue);
+            Search(rootHeader, currentSolution, log, onPartialSolution!, onFullSolution, shouldContinue, cancellationToken);
 
             foreach (Node horizontalNode in IterateRow(rowNode))
             {
-                horizontalNode.ColumnHeader.Uncover();
+                horizontalNode!.ColumnHeader!.Uncover();
             }
             currentSolution.RemoveAt(currentSolution.Count - 1);
 
@@ -71,14 +79,18 @@ public class DLXSolver : IDLXSolver
     {
         for (Node horizontalNode = rowNode.Right; horizontalNode != rowNode; horizontalNode = horizontalNode.Right)
         {
+            if (horizontalNode == null)
+            {
+                throw new InvalidOperationException("Invalid node");
+            }
             yield return horizontalNode;
         }
     }
 
-    private Header ChooseColumn(Header rootHeader)
+    private static Header ChooseColumn(Header rootHeader)
     {
         int minNodes = int.MaxValue;
-        Header selectedColumn = null;
+        Header? selectedColumn = null;
 
         for (Header currentColumn = (Header)rootHeader.Right; currentColumn != rootHeader; currentColumn = (Header)currentColumn.Right)
         {
@@ -89,11 +101,15 @@ public class DLXSolver : IDLXSolver
                 selectedColumn = currentColumn;
             }
         }
+        if (selectedColumn == null)
+        {
+            throw new InvalidOperationException("Invalid column");
+        }
 
         return selectedColumn;
     }
 
-    private int CountNodesInColumn(Header columnHeader)
+    private static int CountNodesInColumn(Header columnHeader)
     {
         int count = 0;
         for (Node node = columnHeader.Down; node != columnHeader; node = node.Down)

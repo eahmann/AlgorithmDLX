@@ -1,6 +1,6 @@
 ﻿namespace AlgorithmDLX.Classes;
 
-public class SudokuConverter
+public class SudokuConverter : ISudokuConverter
 {
     private const int Size = 9;
     private const int BoxSize = 3;
@@ -13,7 +13,7 @@ public class SudokuConverter
     /// </summary>
     /// <param name="sudokuBoard"></param>
     /// <returns></returns>
-    public static bool[][] ConvertToExactCoverMatrix(int[][] sudokuBoard)
+    public bool[][] ConvertToExactCoverMatrix(int[][] sudokuBoard)
     {
         bool[][] matrix = InitializeMatrix();
         FillMatrix(matrix, sudokuBoard);
@@ -24,7 +24,7 @@ public class SudokuConverter
     /// Creates an empty boolean matrix with the correct dimensions.
     /// </summary>
     /// <returns></returns>
-    private static bool[][] InitializeMatrix()
+    private bool[][] InitializeMatrix()
     {
         bool[][] matrix = new bool[MaxMatrixRows][];
         for (int i = 0; i < MaxMatrixRows; i++)
@@ -39,7 +39,7 @@ public class SudokuConverter
     /// </summary>
     /// <param name="matrix"></param>
     /// <param name="sudokuBoard"></param>
-    private static void FillMatrix(bool[][] matrix, int[][] sudokuBoard)
+    private void FillMatrix(bool[][] matrix, int[][] sudokuBoard)
     {
         for (int row = 0; row < Size; row++)
         {
@@ -70,7 +70,7 @@ public class SudokuConverter
     /// <param name="row"></param>
     /// <param name="col"></param>
     /// <param name="num"></param>
-    static private void SetMatrixRow(bool[][] matrix, int row, int col, int num)
+    private void SetMatrixRow(bool[][] matrix, int row, int col, int num)
     {
         int rowIndex = (row * Size * Size) + (col * Size) + num;
         matrix[rowIndex][row * Size + num] = true; // Row constraint
@@ -85,7 +85,7 @@ public class SudokuConverter
     /// <param name="dlxSolution"></param>
     /// <param name="size"></param>
     /// <returns></returns>
-    public static int[][] ConvertFromExactCoverMatrix(List<int> dlxSolution)
+    public int[][] ConvertFromExactCoverMatrix(List<int> dlxSolution)
     {
         if (dlxSolution == null || dlxSolution.Count == 0)
         {
@@ -116,5 +116,4 @@ public class SudokuConverter
 
         return sudokuBoard;
     }
-
 }

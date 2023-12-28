@@ -2,18 +2,28 @@
 
 namespace AlgorithmDLX.Classes;
 
-public class DLXMatrixBuilder
+public class DLXMatrixBuilder : IDLXMatrixBuilder
 {
-    private Header _mainHeader;
-    private Header[] _columnHeaders;
+    private Header? _mainHeader;
+    private Header[]? _columnHeaders;
 
     public Header BuildMatrix(bool[][] matrix)
     {
+        if (matrix == null || matrix.Length == 0 || matrix[0].Length == 0)
+        {
+            throw new ArgumentException("Invalid matrix");
+        }
+
         int rowCount = matrix.Length;
         int colCount = matrix[0].Length;
         
         InitializeHeaders(colCount);
         AddNodes(matrix, rowCount, colCount);
+
+        if (_mainHeader == null || _columnHeaders == null)
+        {
+            throw new ArgumentException("Invalid matrix");
+        }
 
         return _mainHeader;
     }
@@ -41,6 +51,15 @@ public class DLXMatrixBuilder
 
     private void AddNodes(bool[][] matrix, int rowCount, int colCount)
     {
+        if (_mainHeader == null || _columnHeaders == null)
+        {
+            throw new ArgumentException("Invalid matrix");
+        }
+        if (matrix.Length != rowCount || matrix[0].Length != colCount)
+        {
+            throw new ArgumentException("Invalid matrix");
+        }
+
         for (int row = 0; row < rowCount; row++)
         {
             Node? firstNodeInRow = null;

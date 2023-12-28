@@ -3,24 +3,16 @@ using AlgorithmDLX.Domain;
 
 namespace AlgorithmDLX;
 
-public class DLXController
+public class DLXController(IDLXSolver solver, IDLXMatrixBuilder matrixBuilder) : IDLXController
 {
-    private readonly IDLXSolver _solver;
-    private readonly DLXMatrixBuilder _matrixBuilder;
-    private Header _rootHeader;
-    private CancellationTokenSource _cancellationTokenSource;
+    private readonly IDLXSolver _solver = solver;
+    private readonly IDLXMatrixBuilder _matrixBuilder = matrixBuilder;
+    private Header _rootHeader = new();
+    private CancellationTokenSource _cancellationTokenSource = new();
     private int _foundSolutionsCount = 0;
     private bool _shouldWaitAtStep = false;
     private bool _shouldWaitAtSolution = false;
     private int _stepDelayMilliseconds = 0;
-
-    public DLXController(IDLXSolver solver, DLXMatrixBuilder matrixBuilder)
-    {
-        _solver = solver;
-        _matrixBuilder = matrixBuilder;
-        _rootHeader = new Header();
-        _cancellationTokenSource = new CancellationTokenSource();
-    }
 
     public void PrepareMatrix(bool[][] matrix)
     {
@@ -40,7 +32,7 @@ public class DLXController
             }
         }
 
-        await _solver.StartSolveAsync(_rootHeader, onPartialSolution, wrappedOnFullSolution, log, _cancellationTokenSource.Token, StepControl);
+        await _solver.StartSolveAsync(_rootHeader, onPartialSolution, wrappedOnFullSolution, log, StepControl, _cancellationTokenSource.Token);
     }
 
     private bool StepControl()

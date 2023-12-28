@@ -8,6 +8,7 @@ public class DLXSolverTests
     private DLXSolver _solver;
     private DLXMatrixBuilder _matrixBuilder;
     private CancellationTokenSource _cancellationTokenSource;
+    private ISudokuConverter _sudokuConverter;
 
     [SetUp]
     public void Setup()
@@ -15,6 +16,7 @@ public class DLXSolverTests
         _solver = new DLXSolver();
         _matrixBuilder = new DLXMatrixBuilder();
         _cancellationTokenSource = new CancellationTokenSource();
+        _sudokuConverter = new SudokuConverter();
     }
 
     [TestCase("SimpleSudoku")]
@@ -25,7 +27,7 @@ public class DLXSolverTests
     public async Task StartSolveAsync_Tests(string testCaseName, int maxSolutionsToFind = 1)
     {
         int[][] input = FileHelper.ReadJsonTestFiles<int[][]>($"{testCaseName}.json", false, "Sudoku");
-        bool[][] matrix = SudokuConverter.ConvertToExactCoverMatrix(input);
+        bool[][] matrix = _sudokuConverter.ConvertToExactCoverMatrix(input);
         Header rootHeader = _matrixBuilder.BuildMatrix(matrix);
 
         TestExpectedResult<List<int[][]>> testResult = await RunSolver(rootHeader, maxSolutionsToFind);
@@ -47,13 +49,13 @@ public class DLXSolverTests
         List<string> logs = [];
         bool continueEvent() => solutionCount < maxSolutionsToFind;
 
-        await _solver.StartSolveAsync(rootHeader, solution => { }, onFullSolution, message => logs.Add(message), _cancellationTokenSource.Token, continueEvent);
+        await _solver.StartSolveAsync(rootHeader, solution => { }, onFullSolution, message => logs.Add(message), continueEvent, _cancellationTokenSource.Token);
 
         return new TestExpectedResult<List<int[][]>>
         {
             LogMessages = logs,
             RawSolutions = fullSolutions,
-            Solutions = fullSolutions.Select(solution => SudokuConverter.ConvertFromExactCoverMatrix(solution)).ToList(),
+            Solutions = fullSolutions.Select(solution => _sudokuConverter.ConvertFromExactCoverMatrix(solution)).ToList(),
             SolutionCount = fullSolutions.Count
         };
     }

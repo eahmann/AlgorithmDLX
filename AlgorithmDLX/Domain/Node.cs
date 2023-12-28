@@ -28,7 +28,7 @@ public class Node
     /// <summary>
     /// ColumnHeader <see cref="Header"/>
     /// </summary>
-    public Header ColumnHeader { get; set; }
+    public Header? ColumnHeader { get; set; }
 
     /// <summary>
     /// Row index
