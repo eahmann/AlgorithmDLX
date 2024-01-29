@@ -4,7 +4,7 @@
 name: .NET
 
 env:
-  TEST_FILES_PATH: /home/runner/work/AlgorithmDLX/AlgorithmDLX.UnitTest/TestFiles/
+  TEST_FILES_PATH: /home/runner/work/AlgorithmDLX/AlgorithmDLX/AlgorithmDLX.UnitTest/TestFiles/
 
 on:
   push:
