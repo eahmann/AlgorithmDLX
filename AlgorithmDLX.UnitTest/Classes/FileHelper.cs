@@ -61,6 +61,10 @@ public static class FileHelper
     {
         string rootDirectory = isExpected ? ExpectedFilesDirectory : InputFilesDirectory;
         string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("File not found.", filePath);
+        }
         return ReadFromJsonFile<T>(filePath);
     }
 
