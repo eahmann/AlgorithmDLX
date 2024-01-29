@@ -61,6 +61,10 @@ public static class FileHelper
     {
         string rootDirectory = isExpected ? ExpectedFilesDirectory : InputFilesDirectory;
         string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("File not found.", filePath);
+        }
         return ReadFromJsonFile<T>(filePath);
     }
 
@@ -90,9 +94,9 @@ public static class FileHelper
         string assemblyPath = new Uri(Assembly.GetExecutingAssembly().Location).LocalPath;
         string assemblyDirectory = Path.GetDirectoryName(assemblyPath) ?? throw new ArgumentNullException(nameof(assemblyPath));
 
-        string testFilesBasePath = Path.Combine(assemblyDirectory, @"..\..\..\TestFiles", rootDirectory);
+        string testFilesBasePath = Environment.GetEnvironmentVariable("TEST_FILES_PATH") ?? @"..\..\..\TestFiles";
 
-        string testFilesPath = testFilesBasePath;
+        string testFilesPath = Path.Combine(assemblyDirectory, testFilesBasePath, rootDirectory);
         foreach (var className in additionalDirectoryPath)
         {
             if (className != null)
@@ -100,6 +104,7 @@ public static class FileHelper
                 testFilesPath = Path.Combine(testFilesPath, className);
             }
         }
+        Console.WriteLine($"Test file path: {testFilesPath}");
 
         return Path.GetFullPath(testFilesPath);
     }
