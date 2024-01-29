@@ -105,6 +105,7 @@ public static class FileHelper
                 testFilesPath = Path.Combine(testFilesPath, className);
             }
         }
+        Console.WriteLine($"Test file path: {testFilesPath}");
 
         return Path.GetFullPath(testFilesPath);
     }
