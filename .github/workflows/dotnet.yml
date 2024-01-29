@@ -3,6 +3,9 @@
 
 name: .NET
 
+env:
+  TEST_FILES_PATH: /home/runner/work/AlgorithmDLX/AlgorithmDLX.UnitTest/TestFiles/
+
 on:
   push:
     branches: [ "master" ]

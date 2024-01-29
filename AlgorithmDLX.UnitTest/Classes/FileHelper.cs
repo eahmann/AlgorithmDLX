@@ -90,7 +90,8 @@ public static class FileHelper
         string assemblyPath = new Uri(Assembly.GetExecutingAssembly().Location).LocalPath;
         string assemblyDirectory = Path.GetDirectoryName(assemblyPath) ?? throw new ArgumentNullException(nameof(assemblyPath));
 
-        string testFilesBasePath = Path.Combine(assemblyDirectory, @"..\..\..\TestFiles", rootDirectory);
+        string testFilesBasePath = Environment.GetEnvironmentVariable("TEST_FILES_PATH") ??
+            Path.Combine(assemblyDirectory, @"..\..\..\TestFiles", rootDirectory);
 
         string testFilesPath = testFilesBasePath;
         foreach (var className in additionalDirectoryPath)
