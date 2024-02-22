@@ -19,6 +19,12 @@ public class DLXSolverTests
         _sudokuConverter = new SudokuConverter();
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        _cancellationTokenSource.Dispose();
+    }
+    
     [TestCase("SimpleSudoku", TestType.Sudoku)]
     [TestCase("ExpertSudoku", TestType.Sudoku)]
     [TestCase("BlankSudoku", TestType.Sudoku, 5)]
