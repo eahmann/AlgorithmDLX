@@ -4,7 +4,7 @@
 /// Used to visualize and validate test results
 /// </summary>
 /// <typeparam name="T">Solution data type</typeparam>
-public class TestExpectedResult<T>
+public class ExpectedResult<T>
 {
     /// <summary>
     /// Test type
