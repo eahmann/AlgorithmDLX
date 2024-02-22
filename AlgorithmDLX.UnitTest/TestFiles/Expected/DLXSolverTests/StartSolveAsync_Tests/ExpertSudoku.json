@@ -1,5 +1,5 @@
 {
-  "TestType": "",
+  "TestType": "Sudoku",
   "Solutions": [
     [
       [4,5,8,6,1,9,2,7,3],

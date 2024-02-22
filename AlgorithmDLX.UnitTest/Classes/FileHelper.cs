@@ -9,9 +9,7 @@ namespace AlgorithmDLX.UnitTest.Classes;
 /// </summary>
 public static class FileHelper
 {
-    public const string ExpectedFilesDirectory = "Expected";
-    public const string InputFilesDirectory = "Input";
-    public static JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+    public static JsonSerializerSettings JsonSerializerSettings = new()
     {
         Converters = new List<JsonConverter> { new SingleLineArrayConverter() },
         Formatting = Formatting.Indented
@@ -59,7 +57,7 @@ public static class FileHelper
     /// <returns></returns>
     public static T ReadJsonTestFiles<T>(string fileName, bool isExpected, params string[] additionalDirectoryPath)
     {
-        string rootDirectory = isExpected ? ExpectedFilesDirectory : InputFilesDirectory;
+        string rootDirectory = isExpected ? TestFileDirectory.Expected.ToString() : TestFileDirectory.Input.ToString();
         string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
         if (!File.Exists(filePath))
         {
@@ -78,7 +76,7 @@ public static class FileHelper
     /// <param name="additionalDirectoryPath">Additional path to nested file</param>
     public static void WriteJsonTestFiles<T>(string fileName, T data, bool isExpected, params string[] additionalDirectoryPath)
     {
-        string rootDirectory = isExpected ? ExpectedFilesDirectory : InputFilesDirectory;
+        string rootDirectory = isExpected ? TestFileDirectory.Expected.ToString() : TestFileDirectory.Input.ToString();
         string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
         WriteToJsonFile(filePath, data);
     }
@@ -104,8 +102,6 @@ public static class FileHelper
                 testFilesPath = Path.Combine(testFilesPath, className);
             }
         }
-        Console.WriteLine($"Test file path: {testFilesPath}");
-
         return Path.GetFullPath(testFilesPath);
     }
 }
