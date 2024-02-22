@@ -19,24 +19,24 @@ public class DLXSolverTests
         _sudokuConverter = new SudokuConverter();
     }
 
-    [TestCase("SimpleSudoku")]
-    [TestCase("ExpertSudoku")]
-    [TestCase("BlankSudoku", 5)]
-    [TestCase("BlankSudoku", 50)]
-    [TestCase("BlankSudoku", 500)]
-    public async Task StartSolveAsync_Tests(string testCaseName, int maxSolutionsToFind = 1)
+    [TestCase("SimpleSudoku", TestType.Sudoku)]
+    [TestCase("ExpertSudoku", TestType.Sudoku)]
+    [TestCase("BlankSudoku", TestType.Sudoku, 5)]
+    [TestCase("BlankSudoku", TestType.Sudoku, 50)]
+    [TestCase("BlankSudoku", TestType.Sudoku, 500)]
+    public async Task StartSolveAsync_Tests(string testCaseName, string testType, int maxSolutionsToFind = 1)
     {
-        int[][] input = FileHelper.ReadJsonTestFiles<int[][]>($"{testCaseName}.json", false, "Sudoku");
+        int[][] input = FileHelper.ReadJsonTestFiles<int[][]>($"{testCaseName}.json", false, testType);
         bool[][] matrix = _sudokuConverter.ConvertToExactCoverMatrix(input);
         Header rootHeader = _matrixBuilder.BuildMatrix(matrix);
 
-        TestExpectedResult<List<int[][]>> testResult = await RunSolver(rootHeader, maxSolutionsToFind);
+        ExpectedResult<List<int[][]>> testResult = await RunSolver(rootHeader, maxSolutionsToFind, testType);
 
-        string expectedResultFile = maxSolutionsToFind == 1 ? $"{testCaseName}.json" : $"{testCaseName}-{maxSolutionsToFind}.json";
-        TestHelper.Validate.ResultObjectToExpectedJson(expectedResultFile, testResult, true, nameof(DLXSolverTests), nameof(StartSolveAsync_Tests));
+        string fileName = maxSolutionsToFind == 1 ? $"{testCaseName}.json" : $"{testCaseName}-{maxSolutionsToFind}.json";
+        TestHelper.Validate.Object(fileName, testResult, false, nameof(DLXSolverTests), nameof(StartSolveAsync_Tests));
     }
 
-    private async Task<TestExpectedResult<List<int[][]>>> RunSolver(Header rootHeader, int maxSolutionsToFind)
+    private async Task<ExpectedResult<List<int[][]>>> RunSolver(Header rootHeader, int maxSolutionsToFind, string testType)
     {
         List<List<int>> fullSolutions = [];
         int solutionCount = 0;
@@ -51,8 +51,9 @@ public class DLXSolverTests
 
         await _solver.StartSolveAsync(rootHeader, solution => { }, onFullSolution, message => logs.Add(message), continueEvent, _cancellationTokenSource.Token);
 
-        return new TestExpectedResult<List<int[][]>>
+        return new ExpectedResult<List<int[][]>>
         {
+            TestType = testType,
             LogMessages = logs,
             RawSolutions = fullSolutions,
             Solutions = fullSolutions.Select(solution => _sudokuConverter.ConvertFromExactCoverMatrix(solution)).ToList(),

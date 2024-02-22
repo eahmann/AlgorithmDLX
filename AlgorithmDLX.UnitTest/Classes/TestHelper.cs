@@ -132,19 +132,31 @@ public class TestHelper
         }
     }
 
+    /// <summary>
+    /// Class for validating various data types against JSON files.
+    /// </summary>
     public class Validate
     {
-        public static void ResultObjectToExpectedJson<T>(string fileName, T objectToValidate, bool writeIfInvalid = false, params string[] additionalDirectoryPath)
+        /// <summary>
+        /// Validates a JSON file against an object of the same type.
+        /// </summary>
+        /// <typeparam name="T">Object type</typeparam>
+        /// <param name="fileName"></param>
+        /// <param name="objectToValidate"></param>
+        /// <param name="writeFile">Flag to indicate if the file should be created and/or updated</param>
+        /// <param name="additionalDirectoryPath"></param>
+        /// <exception cref="ValidationException"></exception>
+        public static void Object<T>(string fileName, T objectToValidate, bool writeFile = false, params string[] additionalDirectoryPath)
         {
             T existingObject;
-            string filePath = Path.Combine(FileHelper.GetTestFilesPath(FileHelper.ExpectedFilesDirectory, additionalDirectoryPath), fileName);
+            string filePath = Path.Combine(FileHelper.GetTestFilesPath(TestFileDirectory.Expected, additionalDirectoryPath), fileName);
             try
             {
                 existingObject = FileHelper.ReadJsonTestFiles<T>(fileName, true, additionalDirectoryPath);
             }
             catch (FileNotFoundException ex)
             {
-                if (writeIfInvalid)
+                if (writeFile)
                 {
                     FileHelper.WriteToJsonFile(filePath, objectToValidate);
                 }
@@ -156,7 +168,7 @@ public class TestHelper
 
             if (!existingObjectJson.Equals(objectToValidateJson))
             {
-                if (writeIfInvalid)
+                if (writeFile)
                 {
                     FileHelper.WriteToJsonFile(filePath, objectToValidate);
                 }
