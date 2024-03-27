@@ -52,13 +52,12 @@ public static class FileHelper
     /// </summary>
     /// <typeparam name="T">Object type</typeparam>
     /// <param name="fileName">File name</param>
-    /// <param name="isExpected">Determines if it is expected result or input file</param>
+    /// <param name="baseDirectory">Determines if it is expected result or input file</param>
     /// <param name="additionalDirectoryPath">Additional path to nested file</param>
     /// <returns></returns>
-    public static T ReadJsonTestFiles<T>(string fileName, bool isExpected, params string[] additionalDirectoryPath)
+    public static T ReadJsonTestFiles<T>(string fileName, string baseDirectory, params string[] additionalDirectoryPath)
     {
-        string rootDirectory = isExpected ? TestFileDirectory.Expected.ToString() : TestFileDirectory.Input.ToString();
-        string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
+        string filePath = Path.Combine(GetTestFilesPath(baseDirectory, additionalDirectoryPath), fileName);
         if (!File.Exists(filePath))
         {
             throw new FileNotFoundException("File not found.", filePath);
@@ -72,36 +71,35 @@ public static class FileHelper
     /// <typeparam name="T">Object type</typeparam>
     /// <param name="fileName">File name</param>
     /// <param name="data"><see cref="T"/> object</param>
-    /// <param name="isExpected">Determines if it is expected result or input file</param>
+    /// <param name="baseDirectory">Base directory</param>
     /// <param name="additionalDirectoryPath">Additional path to nested file</param>
-    public static void WriteJsonTestFiles<T>(string fileName, T data, bool isExpected, params string[] additionalDirectoryPath)
+    public static void WriteJsonTestFiles<T>(string fileName, T data, string baseDirectory, params string[] additionalDirectoryPath)
     {
-        string rootDirectory = isExpected ? TestFileDirectory.Expected.ToString() : TestFileDirectory.Input.ToString();
-        string filePath = Path.Combine(GetTestFilesPath(rootDirectory, additionalDirectoryPath), fileName);
+        string filePath = Path.Combine(GetTestFilesPath(baseDirectory, additionalDirectoryPath), fileName);
         WriteToJsonFile(filePath, data);
     }
 
     /// <summary>
     /// Get full path to the file
     /// </summary>
-    /// <param name="rootDirectory">Root directory (Expected or Input)</param>
+    /// <param name="baseDirectory">Root directory (Expected or Input)</param>
     /// <param name="additionalDirectoryPath">Additional path to nested file</param>
     /// <returns>Full path to the file</returns>
-    public static string GetTestFilesPath(string rootDirectory, params string[] additionalDirectoryPath)
+    public static string GetTestFilesPath(string baseDirectory, params string[] additionalDirectoryPath)
     {
         string assemblyPath = new Uri(Assembly.GetExecutingAssembly().Location).LocalPath;
         string assemblyDirectory = Path.GetDirectoryName(assemblyPath) ?? throw new ArgumentNullException(nameof(assemblyPath));
 
-        string testFilesBasePath = Environment.GetEnvironmentVariable("TEST_FILES_PATH") ?? @"..\..\..\TestFiles";
+        string filesBasePath = Environment.GetEnvironmentVariable("TEST_FILES_PATH") ?? @"..\..\..\TestFiles";
 
-        string testFilesPath = Path.Combine(assemblyDirectory, testFilesBasePath, rootDirectory);
-        foreach (var className in additionalDirectoryPath)
+        string filePath = Path.Combine(assemblyDirectory, filesBasePath, baseDirectory);
+        foreach (var path in additionalDirectoryPath)
         {
-            if (className != null)
+            if (path != null)
             {
-                testFilesPath = Path.Combine(testFilesPath, className);
+                filePath = Path.Combine(filePath, path);
             }
         }
-        return Path.GetFullPath(testFilesPath);
+        return Path.GetFullPath(filePath);
     }
 }

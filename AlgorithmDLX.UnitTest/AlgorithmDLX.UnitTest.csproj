@@ -29,7 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestFiles\Expected\DLXSolverTests\StartSolveAsync_Tests\" />
+    <Folder Include="TestFiles\Expected\Polyomino\PolyominoToolsTests\" />
+    <Folder Include="TestFiles\Expected\Sudoku\SudokuToolsTests\" />
   </ItemGroup>
 
 </Project>

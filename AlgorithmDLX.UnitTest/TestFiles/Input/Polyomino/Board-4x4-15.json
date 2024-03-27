@@ -1,0 +1,13 @@
+{
+  "Id": "0051c4bc-9f11-425f-8c46-28b2a4b0bf16",
+  "Name": "Board-4x4-00",
+  "Width": 4,
+  "Height": 4,
+  "FilledCells": [
+    {
+      "X": 0,
+      "Y": 0
+    }
+  ],
+  "AvailableCells": 15
+}

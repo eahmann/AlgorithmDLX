@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AlgorithmDLX.UnitTest.Classes.Converters
@@ -9,57 +11,65 @@ namespace AlgorithmDLX.UnitTest.Classes.Converters
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(int[][]) || objectType == typeof(List<List<int>>);
+            // Include bool[][] in the types this converter can handle
+            return objectType == typeof(int[][])
+                || objectType == typeof(List<List<int>>)
+                || objectType == typeof(bool[][]);
         }
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-
             if (value == null)
             {
                 throw new JsonSerializationException("Value is null.");
             }
-            
-            if (value is int[][] array)
+
+            // Handle int[][] serialization
+            if (value is int[][] intArray)
             {
-                WriteIntArray(writer, array);
+                WriteArray(writer, intArray);
             }
-            else if (value is List<List<int>> list)
+            // Handle List<List<int>> serialization
+            else if (value is List<List<int>> intList)
             {
-                WriteIntList(writer, list);
+                WriteList(writer, intList);
+            }
+            // Handle bool[][] serialization
+            else if (value is bool[][] boolArray)
+            {
+                WriteArray(writer, boolArray);
             }
             else
             {
-                throw new JsonSerializationException("Expected int[][] or List<List<int>>");
+                throw new JsonSerializationException("Unsupported type for serialization.");
             }
         }
 
-        private static void WriteIntArray(JsonWriter writer, int[][] array)
+        private static void WriteArray<T>(JsonWriter writer, T[][] array)
         {
             writer.WriteStartArray(); // Start the outer array
 
             foreach (var subArray in array)
             {
-                JArray jArray = new(subArray);
+                JArray jArray = new JArray(subArray);
                 writer.WriteRawValue(jArray.ToString(Formatting.None)); // Write each sub-array
             }
 
             writer.WriteEndArray(); // End the outer array
         }
 
-        private static void WriteIntList(JsonWriter writer, List<List<int>> list)
+        private static void WriteList<T>(JsonWriter writer, List<List<T>> list)
         {
             writer.WriteStartArray(); // Start the outer array
 
             foreach (var subList in list)
             {
-                JArray jArray = new(subList);
+                JArray jArray = new JArray(subList);
                 writer.WriteRawValue(jArray.ToString(Formatting.None)); // Write each sub-list
             }
 
             writer.WriteEndArray(); // End the outer array
         }
-
 
         public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {

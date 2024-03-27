@@ -1,5 +1,5 @@
-﻿using AlgorithmDLX.Classes;
-using AlgorithmDLX.Domain;
+﻿using AlgorithmDLX.Core;
+using AlgorithmDLX.Core.Models;
 
 namespace AlgorithmDLX;
 
