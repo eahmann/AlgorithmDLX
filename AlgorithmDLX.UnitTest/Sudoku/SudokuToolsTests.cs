@@ -3,7 +3,7 @@
 namespace AlgorithmDLX.UnitTest.Sudoku;
 
 [TestFixture]
-internal class PolyominoToolsTests
+internal class SudokuToolsTests
 {
     private ISudokuTools _sudokuTools;
 
@@ -24,7 +24,7 @@ internal class PolyominoToolsTests
         bool[][] matrix = _sudokuTools.ConvertSudokuToMatrix(input);
 
         string fileName = $"{testCaseName}-boolean_matrix.json";
-        TestHelper.Validate.Object(fileName, matrix, false, "Sudoku", nameof(PolyominoToolsTests));
+        TestHelper.Validate.Object(fileName, matrix, false, "Sudoku", nameof(SudokuToolsTests));
 
     }
 }
