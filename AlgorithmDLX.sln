@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgorithmDLX", "AlgorithmDL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlgorithmDLX.UnitTest", "AlgorithmDLX.UnitTest\AlgorithmDLX.UnitTest.csproj", "{1BEB5E8A-DA5C-4355-BCFF-59DDBB8E2249}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlgorithmDLX.MauiBlazorHybridApp", "AlgorithmDLX.MauiBlazorHybridApp\AlgorithmDLX.MauiBlazorHybridApp.csproj", "{C37170A7-0604-4CFB-BA53-DC51473472DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{1BEB5E8A-DA5C-4355-BCFF-59DDBB8E2249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BEB5E8A-DA5C-4355-BCFF-59DDBB8E2249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BEB5E8A-DA5C-4355-BCFF-59DDBB8E2249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C37170A7-0604-4CFB-BA53-DC51473472DC}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

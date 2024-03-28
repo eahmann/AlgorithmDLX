@@ -1,3 +1,3 @@
 global using NUnit.Framework;
-global using AlgorithmDLX.Classes;
-global using AlgorithmDLX.Domain;
+global using AlgorithmDLX.Sudoku;
+global using AlgorithmDLX.Core.Models;

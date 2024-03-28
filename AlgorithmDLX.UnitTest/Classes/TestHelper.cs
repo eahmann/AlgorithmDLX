@@ -1,4 +1,5 @@
-﻿using AlgorithmDLX.UnitTest.Classes.Exceptions;
+﻿using AlgorithmDLX.Core.Models;
+using AlgorithmDLX.UnitTest.Classes.Exceptions;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -152,7 +153,7 @@ public class TestHelper
             string filePath = Path.Combine(FileHelper.GetTestFilesPath(TestFileDirectory.Expected, additionalDirectoryPath), fileName);
             try
             {
-                existingObject = FileHelper.ReadJsonTestFiles<T>(fileName, true, additionalDirectoryPath);
+                existingObject = FileHelper.ReadJsonTestFiles<T>(fileName, TestFileDirectory.Expected, additionalDirectoryPath);
             }
             catch (FileNotFoundException ex)
             {

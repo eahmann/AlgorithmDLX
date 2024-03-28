@@ -1,0 +1,220 @@
+﻿@page "/sudoku"
+@using AlgorithmDLX.Sudoku
+
+@inject IDLXController dlxController
+@inject ISudokuTools sudokuConverter
+
+<h3>Sudoku Solver</h3>
+
+<div class="sudoku-container">
+    @if (sudokuMatrix != null)
+    {
+        <div class="sudoku-grid">
+            @for (int row = 0; row < 9; row++)
+            {
+                int localRow = row; // Local copy of the loop variable
+                <div class="sudoku-row">
+                    @for (int col = 0; col < 9; col++)
+                    {
+                        int localCol = col; // Local copy of the loop variable
+                        var borderStyle = GetBorderStyle(localRow, localCol);
+
+                        <input type="number" min="1" max="9"
+                               class="@borderStyle"
+                               value="@sudokuMatrix[localRow][localCol]?.ToString()"
+                               @onchange="@(e => UpdateCell(localRow, localCol, e.Value.ToString()))" />
+                    }
+                </div>
+            }
+
+        </div>
+
+        <button @onclick="Solve">Solve</button>
+        <button @onclick="Clear">Clear</button>
+
+        @if (solution != null)
+        {
+            <div class="sudoku-grid">
+                @for (int i = 0; i < 9; i++)
+                {
+                    <div class="sudoku-row">
+                        @for (int j = 0; j < 9; j++)
+                        {
+                            var borderStyle = GetBorderStyle(i, j);
+                            <div class="@borderStyle">@solution[i][j]</div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+    }
+    else
+    {
+    <p>Loading...</p>
+    }
+</div>
+
+<style>
+   /* Apply a natural box layout model to all elements */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* Sudoku container style */
+.sudoku-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
+    border: 3px solid #333;
+    background: #fff;
+    padding: 1em;
+     justify-content: center;
+    }
+
+
+/* Adjust button styles as needed */
+button {
+    padding: 0.5em 1em;
+    margin: 0.5em;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+button:hover {
+    background-color: #0056b3;
+}
+
+    .sudoku-cell {
+        width: 40px; /* Set a fixed width */
+        height: 40px; /* Set a fixed height */
+        border: 1px solid gray;
+        text-align: center;
+        font-size: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+    }
+
+
+
+    .thick-right-border {
+        border: 1px solid gray;
+        border-right: 3px solid #333;
+    }
+
+    .thick-bottom-border:before {
+        content: ' ';
+        display: block;
+        background: teal;
+        height: 15px;
+        padding: 0 15px;
+        width: 100%;
+        position: absolute;
+        top: 0px;
+        left: -15px;
+    }
+
+    .sudoku-row {
+        display: flex;
+        flex-direction: row;
+    }
+
+</style>
+
+@code {
+
+    private int?[][] sudokuMatrix = new int?[9][];
+    private int[][] solution;
+    private List<string> log = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        InitializeSudokuMatrix();
+    }
+
+    private void InitializeSudokuMatrix()
+    {
+        for (int i = 0; i < sudokuMatrix.Length; i++)
+        {
+            sudokuMatrix[i] = new int?[9];
+        }
+    }
+
+    private async Task Solve()
+    {
+        // Convert nullable matrix to a regular int matrix
+        var matrix = ConvertToRegularMatrix(sudokuMatrix);
+        var matrix2 = sudokuConverter.ConvertSudokuToMatrix(matrix);
+
+        // Prepare and solve the puzzle
+        dlxController.PrepareMatrix(matrix2);
+        await dlxController.StartSolvingAsync(
+            onPartialSolution: solution => { }, // Depending on your implementation
+            onFullSolution: fullSol =>
+        {
+            // Convert the DLX solution to a Sudoku board
+            solution = sudokuConverter.ConvertSolutionToSudoku(fullSol);
+        },
+            message => log.Add(message), // Optionally handle logs
+            solutionLimit: 1 // Assuming you want only one solution
+        );
+    }
+
+    private void Clear()
+    {
+        InitializeSudokuMatrix();
+        solution = null;
+    }
+
+    private int[][] ConvertToRegularMatrix(int?[][] nullableMatrix)
+    {
+        var regularMatrix = new int[9][];
+        for (int row = 0; row < 9; row++)
+        {
+            regularMatrix[row] = new int[9];
+            for (int col = 0; col < 9; col++)
+            {
+                regularMatrix[row][col] = nullableMatrix[row][col] ?? 0;
+            }
+        }
+        return regularMatrix;
+    }
+
+    private void UpdateCell(int row, int col, string value)
+    {
+        if (int.TryParse(value, out var number) && number >= 1 && number <= 9)
+        {
+            sudokuMatrix[row][col] = number;
+        }
+        else
+        {
+            sudokuMatrix[row][col] = null; // Clear the cell if the input is not a valid number
+        }
+    }
+    private string GetBorderStyle(int row, int col)
+    {
+        string borderClass = "sudoku-cell";
+        if (row % 3 == 2 && row != 8)
+            borderClass += " thick-bottom-border";
+        if (col % 3 == 2 && col != 8)
+            borderClass += " thick-right-border";
+        return borderClass;
+    }
+}
